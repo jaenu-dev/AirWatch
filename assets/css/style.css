@@ -1,0 +1,948 @@
+/*
+* ==========================================
+* MODERN WEB PORTAL UI - AIR QUALITY SYSTEM
+* ==========================================
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Brand Colors */
+    --brand-primary: #60A5FA;
+    /* Lighter blue for dark mode */
+    --brand-secondary: #22D3EE;
+    --brand-dark: #F8FAFC;
+    /* Inverted for text */
+
+    /* Semantic Colors */
+    --color-good: #10B981;
+    --color-moderate: #F59E0B;
+    --color-unhealthy: #F97316;
+    --color-danger: #EF4444;
+
+    /* Surfaces (DARK MODE) */
+    --bg-body: #0F172A;
+    /* Slate 900 */
+    --bg-glass: rgba(30, 41, 59, 0.7);
+    /* Slate 800 with opacity */
+    --bg-glass-nav: rgba(15, 23, 42, 0.85);
+    /* Slate 900 with opacity */
+
+    /* Spacing & Radius */
+    --navbar-height: 80px;
+    --radius-l: 24px;
+    --radius-m: 16px;
+
+    /* Effects */
+    --blur-glass: blur(20px);
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-body);
+    color: #E2E8F0;
+    /* Slate 200 */
+    margin: 0;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s;
+}
+
+/* ----------------------------------
+   NAVIGATION (TOP GLASS BAR)
+---------------------------------- */
+.navbar-glass {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--navbar-height);
+    background: var(--bg-glass-nav);
+    backdrop-filter: var(--blur-glass);
+    -webkit-backdrop-filter: var(--blur-glass);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--brand-primary);
+}
+
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    margin-left: auto;
+}
+
+.nav-link-item {
+    font-weight: 600;
+    color: #64748B;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.nav-link-item:hover,
+.nav-link-item.active {
+    color: var(--brand-primary);
+}
+
+.nav-link-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--brand-primary);
+    border-radius: 2px;
+}
+
+/* Badge in Nav */
+.nav-badge {
+    background: var(--color-danger);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    vertical-align: top;
+    margin-left: 4px;
+}
+
+/* ----------------------------------
+   WIDE HERO SECTION (NEW DASHBOARD)
+---------------------------------- */
+.hero-section-new {
+    margin-top: -1px;
+    /* Overlap navbar bottom border */
+}
+
+/* Main Dashboard Card */
+/* Main Dashboard Card */
+/* Main Dashboard Card */
+/* Main Dashboard Card */
+.dashboard-card {
+    border-radius: 20px;
+    padding: 2rem 2.5rem 2.5rem;
+    /* User preferred padding */
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    /* Remove max-width to widen as requested */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    /* Base z-index for content layering */
+    z-index: 1;
+}
+
+/* City Skyline (Pseudo-element for reliable layering) */
+.dashboard-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Use local image as requested */
+    background-image: url('../city.png');
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: 100% auto;
+    /* Soft light blend to merge with gradient, or normal if image is pre-styled */
+    background-blend-mode: soft-light;
+    opacity: 0.6;
+    /* Adjust opacity to overlap nicely with gradient */
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Background Gradients (Vertical: Dark -> Color Horizon) */
+/* Gradient starts dark, stays dark until middle, then fades to color at bottom */
+.hero-bg-good {
+    background: linear-gradient(180deg, #0F172A 0%, #0F172A 40%, #059669 100%);
+}
+
+.hero-bg-moderate {
+    background: linear-gradient(180deg, #0F172A 0%, #0F172A 40%, #D97706 100%);
+}
+
+.hero-bg-poor {
+    background: linear-gradient(180deg, #0F172A 0%, #0F172A 40%, #F97316 100%);
+}
+
+.hero-bg-unhealthy {
+    background: linear-gradient(180deg, #0F172A 0%, #0F172A 40%, #EA580C 100%);
+}
+
+.hero-bg-severe {
+    background: linear-gradient(180deg, #0F172A 0%, #0F172A 40%, #A855F7 100%);
+}
+
+.hero-bg-hazardous {
+    background: linear-gradient(180deg, #0F172A 0%, #0F172A 40%, #B91C1C 100%);
+}
+
+/* AQI Scale Bar Container */
+.aqi-scale-container {
+    max-width: 30%;
+    /* Reduced to 30% per user request */
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 2rem !important;
+    /* Adjust spacing */
+}
+
+/* AQI Scale Bar */
+.aqi-scale-bar {
+    height: 12px;
+    width: 100%;
+    border-radius: 20px;
+    background: linear-gradient(to right,
+            #10B981 0%,
+            #F59E0B 33%,
+            #F97316 66%,
+            #EF4444 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+.aqi-marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+    border: 3px solid white;
+    z-index: 2;
+    transition: left 1s ease-out;
+}
+
+.marker-dot {
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    /* Inherits text color of parent if set, else tweak */
+    border-radius: 50%;
+}
+
+/* Illustration */
+.illustration-circle {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Weather Widget */
+.weather-widget {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.weather-widget:hover {
+    transform: translateY(-5px);
+}
+
+/* Legacy Hero Classes (Deprecate if unused) */
+.hero-wide {
+    display: none;
+    /* Hide old hero */
+}
+
+/* Dynamic Gradient Backgrounds */
+.hero-bg-default {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+}
+
+.hero-bg-good {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.hero-bg-moderate {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: #FFF;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hero-bg-unhealthy {
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+}
+
+.hero-bg-hazardous {
+    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+}
+
+.hero-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding-top: var(--navbar-height);
+}
+
+.hero-label {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    max-width: 600px;
+}
+
+/* AQI Display in Hero */
+.hero-aqi-display {
+    text-align: right;
+}
+
+.aqi-pill {
+    background: white;
+    border: none;
+    border-radius: 30px;
+    padding: 1.5rem 3rem;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.text-good {
+    color: var(--color-good) !important;
+}
+
+.text-moderate {
+    color: var(--color-moderate) !important;
+}
+
+.text-unhealthy {
+    color: var(--color-unhealthy) !important;
+}
+
+.text-hazardous {
+    color: var(--color-hazardous) !important;
+}
+
+.aqi-val {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    display: block;
+}
+
+.aqi-lbl {
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
+/* ----------------------------------
+   CONTENT CARDS
+---------------------------------- */
+/* content-wrapper already exists */
+.content-wrapper {
+    margin-top: 0;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 4rem;
+}
+
+/* ----------------------------------
+   MAP & CHART WIDGETS
+---------------------------------- */
+#map {
+    z-index: 1;
+    /* Ensure map is below dropdowns/navs if any overlap */
+    background: #f1f5f9;
+    /* Loading placeholder color */
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+}
+
+.leaflet-popup-tip {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+    padding: 0.5rem;
+}
+
+/* Glass Cards */
+.glass-panel {
+    background: white;
+    border-radius: var(--radius-m);
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #E2E8F0;
+    height: 100%;
+}
+
+.glass-panel:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-soft) !important;
+    cursor: default;
+    /* transform: translateY(-5px); */
+    /* box-shadow: var(--shadow-hover); */
+}
+
+/* Feature Grid */
+.feature-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: var(--bg-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--brand-primary);
+    flex-shrink: 0;
+}
+
+.feature-text h5 {
+    margin: 0 0 5px 0;
+    font-weight: 700;
+}
+
+.feature-text p {
+    margin: 0;
+    color: #64748B;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Table Styling */
+.table-panel {
+    background: white;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+}
+
+.modern-table thead {
+    background: #F1F5F9;
+}
+
+.modern-table th {
+    padding: 1.25rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.modern-table td {
+    padding: 1.25rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #F1F5F9;
+    color: var(--brand-dark);
+}
+
+.modern-table tr:hover td {
+    background: #F8FAFC;
+}
+
+/* Status Chips */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.badge-good {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.badge-moderate {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-unhealthy {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* ----------------------------------
+   RESPONSIVE & MOBILE
+---------------------------------- */
+
+/* Tablet & Mobile (Max 991px) */
+@media (max-width: 991px) {
+    .navbar-glass {
+        padding: 0 1rem;
+        height: 70px;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+
+
+    .nav-link-item {
+        font-size: 1.1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding-bottom: 0.5rem;
+        width: 100%;
+    }
+
+    .nav-link-item.active::after {
+        display: none;
+        /* Remove underline on mobile */
+    }
+
+    .nav-link-item.active {
+        color: var(--brand-primary);
+        padding-left: 10px;
+        border-left: 3px solid var(--brand-primary);
+        border-bottom: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        border: none;
+        background: transparent;
+        width: 48px;
+        height: 48px;
+        /* High touch target */
+        border-radius: 12px;
+        font-size: 1.5rem;
+        /* Larger icon */
+        color: var(--brand-primary);
+        /* Use primary color for high visibility */
+        cursor: pointer;
+        transition: all 0.2s;
+        z-index: 1100;
+        /* Ensure above everything */
+        position: relative;
+    }
+
+    .mobile-menu-btn:hover,
+    .mobile-menu-btn:active {
+        background: rgba(26, 92, 255, 0.1);
+        transform: scale(1.05);
+    }
+
+    /* Hero Adjustments */
+    .hero-wide {
+        padding: 8rem 0 4rem;
+        margin-top: -70px;
+        text-align: center;
+    }
+
+    .hero-content {
+        padding-top: 0;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+        margin: 0 auto 2rem;
+    }
+
+    .hero-aqi-display {
+        text-align: center;
+        margin-top: 0;
+    }
+
+    .feature-box {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Reverse column order on mobile for Hero: Text atop, Gauge below?
+       Actually standard stacking (Text then Gauge) is fine.
+    */
+
+    .aqi-scale-container {
+        max-width: 80%;
+        /* Wider on tablets */
+        margin: 2rem auto 0;
+        /* Center it */
+    }
+}
+
+/* Mobile Portrait (Max 576px) */
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .aqi-pill {
+        padding: 1rem 2rem;
+    }
+
+    .aqi-val {
+        font-size: 3.5rem;
+    }
+
+    .glass-panel {
+        padding: 1.25rem;
+    }
+
+    /* Make tables scrollable manually if needed, or stick to card view */
+    .table-panel {
+        border-radius: var(--radius-m);
+    }
+
+    .modern-table th,
+    .modern-table td {
+        padding: 1rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Responsive AQI Scale for Mobile */
+    .aqi-scale-container {
+        max-width: 100% !important;
+        margin-top: 1.5rem !important;
+    }
+
+    .dashboard-card {
+        padding: 1.5rem 1rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .mobile-menu-btn {
+        display: none;
+    }
+
+    .nav-links {
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        pointer-events: all !important;
+    }
+}
+
+/* Major Air Pollutants Section */
+.pollutant-card {
+    background: #1E293B;
+    /* Dark Slate to match theme */
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid #10B981;
+    /* Default Good Green */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pollutant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pollutant-info h5 {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    /* Muted text */
+    margin-bottom: 0.2rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.pollutant-info h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.pollutant-value {
+    text-align: right;
+}
+
+.pollutant-value .value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    display: block;
+}
+
+.pollutant-value .unit {
+    font-size: 0.75rem;
+    color: #94A3B8;
+}
+
+/* AQI Reference Scale Section */
+.aqi-ref-card {
+    background: #1E293B;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    border-left: 6px solid #ccc;
+    /* fallback */
+    transition: transform 0.2s;
+}
+
+.aqi-ref-card:hover {
+    transform: translateY(-2px);
+    background: #253347;
+}
+
+/* Specific Border Colors for AQI Ranges */
+.aqi-ref-good {
+    border-left-color: #10B981;
+}
+
+.aqi-ref-moderate {
+    border-left-color: #FACC15;
+}
+
+.aqi-ref-poor {
+    border-left-color: #F97316;
+}
+
+.aqi-ref-unhealthy {
+    border-left-color: #EF4444;
+}
+
+.aqi-ref-severe {
+    border-left-color: #A855F7;
+}
+
+.aqi-ref-hazardous {
+    border-left-color: #B91C1C;
+}
+
+/* In-card Square Icon */
+.aqi-square-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.bg-good {
+    background-color: #10B981;
+}
+
+.bg-moderate {
+    background-color: #FACC15;
+}
+
+.bg-poor {
+    background-color: #F97316;
+}
+
+.bg-unhealthy {
+    background-color: #EF4444;
+}
+
+.bg-severe {
+    background-color: #A855F7;
+}
+
+.bg-hazardous {
+    background-color: #B91C1C;
+}
+
+.aqi-ref-text h5 {
+    color: white;
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.aqi-ref-text small {
+    color: #94A3B8;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.aqi-ref-desc {
+    color: #CBD5E1;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* ----------------------------------
+   ADMIN UI STYLES (DARK/GLASS)
+---------------------------------- */
+.admin-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+.table-dark-glass {
+    color: #E2E8F0;
+    margin-bottom: 0;
+}
+
+.table-dark-glass th {
+    background: rgba(15, 23, 42, 0.95);
+    color: #94A3B8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+}
+
+.table-dark-glass td {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    vertical-align: middle;
+    color: white;
+}
+
+.table-dark-glass tr:hover td {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.modal-glass .modal-content {
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modal-glass .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-glass .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-glass .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.form-control-dark {
+    background: #0F172A;
+    border: 1px solid #334155;
+    color: white;
+}
+
+.form-control-dark:focus {
+    background: #0F172A;
+    border-color: var(--brand-primary);
+    color: white;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+}
+
+.pagination-dark .page-link {
+    background: #1E293B;
+    border-color: #334155;
+    color: #94A3B8;
+}
+
+.pagination-dark .page-item.active .page-link {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: white;
+}
+
+.pagination-dark .page-item.disabled .page-link {
+    background: #0F172A;
+    border-color: #334155;
+    color: #475569;
+}
