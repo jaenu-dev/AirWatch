@@ -49,10 +49,8 @@ $alertCount = countActiveAlerts();
     <!-- ADMIN NAVIGATION -->
     <nav class="navbar navbar-expand-lg navbar-glass mb-4">
         <div class="container">
-            <div class="brand-wrapper">
-                <div class="brand-icon">
-                    <i class="fas fa-layer-group"></i>
-                </div>
+            <div class="brand-wrapper d-flex align-items-center gap-3">
+                <img src="../assets/logo.png" alt="Logo" style="width: 45px; height: 45px; object-fit: contain;">
                 <span>AirWatch Admin</span>
             </div>
 
@@ -64,7 +62,7 @@ $alertCount = countActiveAlerts();
                 <div class="nav-links ms-auto">
                     <a class="nav-link-item active" href="data.php">Kelola Data</a>
                     <a class="nav-link-item" href="alert.php">Kelola Alert</a>
-                    <a href="../index.php" class="btn btn-sm btn-outline-light rounded-pill ms-3"><i class="fas fa-external-link-alt me-1"></i> Ke Website Utama</a>
+                    <a href="../index.php" class="btn-premium btn-outline-light ms-3"><i class="fas fa-external-link-alt"></i> Ke Website Utama</a>
                 </div>
             </div>
         </div>
@@ -75,11 +73,11 @@ $alertCount = countActiveAlerts();
         
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold text-white">Manajemen Data Sensor</h2>
-                <p class="text-white-50">Tambah, edit, atau hapus data rekaman sensor.</p>
+                <h2 class="fw-bold text-dark">Manajemen Data Sensor</h2>
+                <p class="text-muted">Tambah, edit, atau hapus data rekaman sensor.</p>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 shadow-lg" data-bs-toggle="modal" data-bs-target="#addModal">
-                <i class="fas fa-plus me-2"></i> Tambah Data Manual
+            <button class="btn-premium btn-primary px-4" data-bs-toggle="modal" data-bs-target="#addModal">
+                <i class="fas fa-plus"></i> Tambah Data Manual
             </button>
         </div>
 
@@ -117,7 +115,7 @@ $alertCount = countActiveAlerts();
         <!-- Table -->
         <div class="admin-card p-0 overflow-hidden">
             <div class="table-responsive">
-                <table class="table table-dark-glass align-middle">
+                <table class="table table-premium mb-0">
                     <thead class="">
                         <tr>
                             <th class="py-3 ps-4">Waktu</th>
@@ -132,8 +130,8 @@ $alertCount = countActiveAlerts();
                             <?php while($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td class="ps-4">
-                                    <span class="fw-bold text-white"><?php echo date('d M Y', strtotime($row['timestamp'])); ?></span><br>
-                                    <small class="text-white-50"><?php echo date('H:i', strtotime($row['timestamp'])); ?></small>
+                                    <span class="fw-bold text-dark"><?php echo date('d M Y', strtotime($row['timestamp'])); ?></span><br>
+                                    <small class="text-muted"><?php echo date('H:i', strtotime($row['timestamp'])); ?></small>
                                 </td>
                                 <td><?php echo htmlspecialchars($row['lokasi']); ?></td>
                                 <td><span class="fw-bold"><?php echo $row['pm25']; ?></span> µg/m³</td>
@@ -143,15 +141,21 @@ $alertCount = countActiveAlerts();
                                         $calc = calculateAQI($row['pm25']);
                                         $s = $calc['status'];
                                         
-                                        $statusClass = 'bg-secondary';
-                                        if($s == 'Good') $statusClass = 'bg-good';
-                                        elseif($s == 'Moderate') $statusClass = 'bg-moderate text-dark';
-                                        elseif($s == 'Poor') $statusClass = 'bg-poor';
-                                        elseif($s == 'Unhealthy') $statusClass = 'bg-unhealthy';
-                                        elseif($s == 'Severe') $statusClass = 'bg-severe';
-                                        elseif($s == 'Hazardous') $statusClass = 'bg-hazardous';
+                                        // Indonesian Translation Mapping
+                                        $statusMap = [
+                                            'Good'      => ['label' => 'Baik',           'class' => 'bg-good'],
+                                            'Moderate'  => ['label' => 'Sedang',         'class' => 'bg-moderate text-dark'],
+                                            'Poor'      => ['label' => 'Tidak Sehat (S)', 'class' => 'bg-poor'],
+                                            'Unhealthy' => ['label' => 'Tidak Sehat',    'class' => 'bg-unhealthy'],
+                                            'Severe'    => ['label' => 'Sangat Tdk Sehat', 'class' => 'bg-severe'],
+                                            'Hazardous' => ['label' => 'Berbahaya',      'class' => 'bg-hazardous']
+                                        ];
+
+                                        $st = $statusMap[$s] ?? ['label' => $s, 'class' => 'bg-secondary'];
                                     ?>
-                                    <span class="badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($s); ?></span>
+                                    <span class="badge <?php echo $st['class']; ?>" style="font-weight: 700; padding: 0.5em 1em; border-radius: 6px;">
+                                        <?php echo htmlspecialchars($st['label']); ?>
+                                    </span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <button class="btn btn-sm btn-outline-info me-1" 
@@ -175,13 +179,14 @@ $alertCount = countActiveAlerts();
                     </tbody>
                 </table>
             </div>
+            </div>
         </div>
 
         <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
         <div class="d-flex justify-content-center mt-4">
             <nav>
-                <ul class="pagination pagination-dark">
+                <ul class="pagination pagination-premium">
                     <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
                         <a class="page-link rounded-start-pill" href="?page=<?php echo $page-1; ?>">Prev</a>
                     </li>

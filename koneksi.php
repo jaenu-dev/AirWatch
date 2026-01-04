@@ -13,6 +13,9 @@ define('DB_USER', getenv('DB_USER') ?: 'root');           // Username database
 define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : ''); // Password database
 define('DB_NAME', getenv('DB_NAME') ?: 'kualitas_udara'); // Nama database
 
+// Set timezone ke Asia/Jakarta (WIB)
+date_default_timezone_set('Asia/Jakarta');
+
 // Koneksi ke database menggunakan MySQLi
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
@@ -23,6 +26,9 @@ if ($conn->connect_error) {
 
 // Set charset ke UTF-8 untuk mendukung karakter Indonesia
 $conn->set_charset("utf8mb4");
+
+// Sinkronisasi timezone di sesi database
+$conn->query("SET time_zone = '+07:00'");
 
 /**
  * Fungsi untuk mengambil data sensor terbaru
