@@ -8,10 +8,15 @@
  */
 
 // Konfigurasi database
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');      // Host database (auto-detect Docker or Localhost)
-define('DB_USER', getenv('DB_USER') ?: 'root');           // Username database
-define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : ''); // Password database
-define('DB_NAME', getenv('DB_NAME') ?: 'kualitas_udara'); // Nama database
+// -------------------------------------------------------------
+// PENTING: Jika diupload ke Hosting (seperti InfinityFree),
+// UBAH 4 baris di bawah ini sesuai detail dari panel hosting Anda!
+// -------------------------------------------------------------
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');      // Ganti 'localhost' dengan 'sqlXXX.infinityfree.com'
+define('DB_USER', getenv('DB_USER') ?: 'root');           // Ganti 'root' dengan username dari hosting (contoh: if0_34xxxxx)
+define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : ''); // Isi password akun hosting Anda
+define('DB_NAME', getenv('DB_NAME') ?: 'kualitas_udara'); // Ganti dengan nama database dari hosting (contoh: if0_34xxxxx_airwatch)
+// -------------------------------------------------------------
 
 // Set timezone ke Asia/Jakarta (WIB)
 date_default_timezone_set('Asia/Jakarta');

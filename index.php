@@ -187,7 +187,14 @@ $autoShowAlert = in_array($statusParams['class'], $badStatuses);
                             foreach($miniPollutants as $mp):
                                 $pStatus = getTierInfo($mp['type'], $mp['val'], $aqiTiers, $pollutantRefs);
                             ?>
-                            <div class="pollutant-mini-box" style="border-top: 4px solid <?php echo $pStatus['color']; ?>;">
+                            <div class="pollutant-mini-box position-relative" style="border-top: 4px solid <?php echo $pStatus['color']; ?>;">
+                                <!-- Info Button -->
+                                <button class="btn btn-link position-absolute top-0 end-0 p-2 text-decoration-none" 
+                                        style="color: #94a3b8;"
+                                        onclick="showPollutantModal('<?php echo $mp['type']; ?>')">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+
                                 <div class="pollutant-mini-label"><?php echo $mp['label']; ?></div>
                                 <div class="pollutant-mini-value" style="color: <?php echo $pStatus['color']; ?>;"><?php echo $mp['val']; ?></div>
                                 <div class="pollutant-mini-unit"><?php echo $mp['unit']; ?></div>
@@ -413,6 +420,22 @@ $autoShowAlert = in_array($statusParams['class'], $badStatuses);
         </div>
     </div>
 
+    <!-- POLLUTANT INFO MODAL -->
+    <div class="modal fade modal-glass" id="pollutantModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <!-- Light/Glass Theme matching Web Portal -->
+            <div class="modal-content" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.9) 100%); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15); backdrop-filter: blur(10px);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="pModalTitle">Info Polutan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2 text-center">
+                    <div id="pModalContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="py-5 mt-5">
         <div class="container text-center">
@@ -427,6 +450,96 @@ $autoShowAlert = in_array($statusParams['class'], $badStatuses);
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script>
+        // Pollutant Definitions
+        const pollutantInfo = {
+            'pm25': {
+                title: 'PM2.5 (Partikulat Halus)',
+                desc: `
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <img src="https://img.icons8.com/fluency/96/dust.png" alt="PM2.5" class="mb-3" style="width:80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+                        <div class="badge bg-danger rounded-pill px-3 py-2">Partikel < 2.5 µm</div>
+                    </div>
+                    <p class="text-center mb-3 text-dark"><strong>Apa itu?</strong> Partikel udara yang sangat kecil (kurang dari 2.5 mikrometer), sekitar 3% dari diameter rambut manusia.</p>
+                    <p class="text-center mb-4 text-muted"><strong>Bahaya:</strong> Karena ukurannya yang kecil, PM2.5 dapat menembus jauh ke dalam paru-paru dan bahkan masuk ke aliran darah.</p>
+                    <div class="alert alert-light border shadow-sm small text-dark text-start" style="background-color: #F8FAFC;">
+                        <i class="fas fa-smog me-2 text-danger"></i> <strong>Sumber:</strong> Asap kendaraan, pembakaran sampah, dan emisi industri.
+                    </div>`
+            },
+            'pm10': {
+                title: 'PM10 (Partikulat Kasar)',
+                desc: `
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <img src="https://img.icons8.com/fluency/96/windy-weather.png" alt="PM10" class="mb-3" style="width:80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+                        <div class="badge bg-warning text-dark rounded-pill px-3 py-2">Partikel < 10 µm</div>
+                    </div>
+                    <p class="text-center mb-3 text-dark"><strong>Apa itu?</strong> Partikel yang dapat dihirup, dengan diameter 10 mikrometer atau lebih kecil (seperti debu).</p>
+                    <p class="text-center mb-4 text-muted"><strong>Bahaya:</strong> Dapat mengiritasi mata, hidung, dan tenggorokan. Paparan tinggi dapat memperburuk asma.</p>
+                    <div class="alert alert-light border shadow-sm small text-dark text-start" style="background-color: #F8FAFC;">
+                        <i class="fas fa-wind me-2 text-warning"></i> <strong>Sumber:</strong> Debu jalanan, aktivitas konstruksi, dan pertanian.
+                    </div>`
+            },
+            'co': {
+                title: 'CO (Karbon Monoksida)',
+                desc: `
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <img src="https://img.icons8.com/fluency/96/gas-mask.png" alt="CO" class="mb-3" style="width:80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+                        <div class="badge bg-secondary rounded-pill px-3 py-2">Gas Beracun</div>
+                    </div>
+                    <p class="text-center mb-3 text-dark"><strong>Apa itu?</strong> Gas yang tidak berwarna dan tidak berbau yang dihasilkan dari pembakaran tidak sempurna.</p>
+                    <p class="text-center mb-4 text-muted"><strong>Bahaya:</strong> Mengurangi kemampuan darah membawa oksigen. Konsentrasi tinggi bisa mematikan.</p>
+                    <div class="alert alert-light border shadow-sm small text-dark text-start" style="background-color: #F8FAFC;">
+                        <i class="fas fa-car-side me-2 text-secondary"></i> <strong>Sumber:</strong> Knalpot kendaraan bermotor, asap rokok.
+                    </div>`
+            },
+            'no2': {
+                title: 'NO2 (Nitrogen Dioksida)',
+                desc: `
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <img src="https://img.icons8.com/fluency/96/air-quality.png" alt="NO2" class="mb-3" style="width:80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+                        <div class="badge bg-info text-dark rounded-pill px-3 py-2">Gas Iritan</div>
+                    </div>
+                    <p class="text-center mb-3 text-dark"><strong>Apa itu?</strong> Gas polutan yang sangat reaktif, biasanya berwarna coklat kemerahan dengan bau tajam.</p>
+                    <p class="text-center mb-4 text-muted"><strong>Bahaya:</strong> Mengiritasi saluran pernapasan, memperburuk asma, dan menurunkan fungsi paru-paru.</p>
+                    <div class="alert alert-light border shadow-sm small text-dark text-start" style="background-color: #F8FAFC;">
+                        <i class="fas fa-industry me-2 text-info"></i> <strong>Sumber:</strong> Emisi kendaraan (diesel) dan pembangkit listrik.
+                    </div>`
+            },
+            'so2': {
+                title: 'SO2 (Sulfur Dioksida)',
+                desc: `
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <img src="https://img.icons8.com/fluency/96/factory.png" alt="SO2" class="mb-3" style="width:80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+                        <div class="badge bg-success rounded-pill px-3 py-2">Gas Belerang</div>
+                    </div>
+                    <p class="text-center mb-3 text-dark"><strong>Apa itu?</strong> Gas tidak berwarna dengan bau menyengat dari pembakaran bahan bakar fosil.</p>
+                    <p class="text-center mb-4 text-muted"><strong>Bahaya:</strong> Menyebabkan batuk, sesak napas. Penyebab utama hujan asam.</p>
+                    <div class="alert alert-light border shadow-sm small text-dark text-start" style="background-color: #F8FAFC;">
+                        <i class="fas fa-fire me-2 text-success"></i> <strong>Sumber:</strong> PLTU batubara, pabrik pengolahan minyak.
+                    </div>`
+            },
+            'o3': {
+                title: 'O3 (Ozon Permukaan)',
+                desc: `
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <img src="https://img.icons8.com/fluency/96/climate-change.png" alt="O3" class="mb-3" style="width:80px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                        <div class="badge bg-primary rounded-pill px-3 py-2">Gas Reaktif</div>
+                    </div>
+                    <p class="text-center mb-3 text-dark"><strong>Apa itu?</strong> Polutan berbahaya yang terbentuk dari reaksi kimiawi saat terpapar sinar matahari.</p>
+                    <p class="text-center mb-4 text-muted"><strong>Bahaya:</strong> Memicu asma agresif, mengurangi fungsi paru-paru secara permanen.</p>
+                    <div class="alert alert-light border shadow-sm small text-dark text-start" style="background-color: #F8FAFC;">
+                        <i class="fas fa-sun me-2 text-warning"></i> <strong>Sumber:</strong> Reaksi polutan (NOx & VOC) dengan sinar matahari.
+                    </div>`
+            }
+        };
+
+        function showPollutantModal(type) {
+            const data = pollutantInfo[type];
+            if(data) {
+                document.getElementById('pModalTitle').innerText = data.title;
+                document.getElementById('pModalContent').innerHTML = data.desc;
+                new bootstrap.Modal(document.getElementById('pollutantModal')).show();
+            }
+        }
         // --- 1. INITIALIZE MAP (Yogyakarta) ---
         if (document.getElementById('map')) {
             var map = L.map('map').setView([-7.7956, 110.3695], 12); // Center of Jogja

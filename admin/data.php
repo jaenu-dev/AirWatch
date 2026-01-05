@@ -49,7 +49,7 @@ $alertCount = 0; // Alerts disabled
     <!-- ADMIN NAVIGATION -->
     <nav class="navbar navbar-expand-lg navbar-glass mb-4">
         <div class="container">
-            <div class="brand-wrapper d-flex align-items-center gap-3">
+            <div class="brand-wrapper d-flex align-items-center gap-0">
                 <img src="../assets/logo.png" alt="Logo" style="width: 45px; height: 45px; object-fit: contain;">
                 <span>AirWatch Admin</span>
             </div>
@@ -278,19 +278,44 @@ $alertCount = 0; // Alerts disabled
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label text-white-50">Lokasi</label>
-                            <input type="text" name="lokasi" id="edit_lokasi" class="form-control form-control-dark bg-secondary" readonly>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50">Lokasi</label>
+                                <input type="text" name="lokasi" id="edit_lokasi" class="form-control form-control-dark bg-secondary" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50">Suhu (°C)</label>
+                                <input type="number" step="0.1" name="suhu" id="edit_suhu" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-white-50">PM 2.5</label>
+                                <input type="number" step="0.1" name="pm25" id="edit_pm25" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-white-50">PM 10</label>
+                                <input type="number" step="0.1" name="pm10" id="edit_pm10" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-white-50">Kelembapan (%)</label>
+                                <input type="number" step="0.1" name="kelembapan" id="edit_kelembapan" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-white-50">CO</label>
+                                <input type="number" step="0.01" name="co" id="edit_co" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-white-50">NO2</label>
+                                <input type="number" step="0.001" name="no2" id="edit_no2" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-white-50">SO2</label>
+                                <input type="number" step="0.001" name="so2" id="edit_so2" class="form-control form-control-dark" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-white-50">O3</label>
+                                <input type="number" step="0.001" name="o3" id="edit_o3" class="form-control form-control-dark" required>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label text-white-50">PM 2.5</label>
-                            <input type="number" step="0.1" name="pm25" id="edit_pm25" class="form-control form-control-dark" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-white-50">Suhu</label>
-                            <input type="number" step="0.1" name="suhu" id="edit_suhu" class="form-control form-control-dark" required>
-                        </div>
-                        <small class="text-white-50 text-center d-block">Simpel Editor (Field lain dianggap tetap)</small>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Batal</button>
@@ -307,7 +332,13 @@ $alertCount = 0; // Alerts disabled
             document.getElementById('edit_id').value = data.id;
             document.getElementById('edit_lokasi').value = data.lokasi;
             document.getElementById('edit_pm25').value = data.pm25;
+            document.getElementById('edit_pm10').value = data.pm10;
             document.getElementById('edit_suhu').value = data.suhu;
+            document.getElementById('edit_kelembapan').value = data.kelembapan;
+            document.getElementById('edit_co').value = data.co;
+            document.getElementById('edit_no2').value = data.no2;
+            document.getElementById('edit_so2').value = data.so2;
+            document.getElementById('edit_o3').value = data.o3;
             new bootstrap.Modal(document.getElementById('editModal')).show();
         }
     </script>

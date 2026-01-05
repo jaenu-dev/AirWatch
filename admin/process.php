@@ -36,7 +36,13 @@ if (isset($_POST['action_data'])) {
         $id = (int)$_POST['id'];
         $lokasi = escape($_POST['lokasi']);
         $pm25 = (float)$_POST['pm25'];
+        $pm10 = (float)$_POST['pm10'];
+        $co = (float)$_POST['co'];
+        $no2 = (float)$_POST['no2'];
+        $so2 = (float)$_POST['so2'];
+        $o3 = (float)$_POST['o3'];
         $suhu = (float)$_POST['suhu'];
+        $kelembapan = (float)$_POST['kelembapan'];
         
         // Recalculate AQI on edit
         $aqiResult = calculateAQI($pm25);
@@ -46,7 +52,13 @@ if (isset($_POST['action_data'])) {
         $sql = "UPDATE sensor_data SET 
                 lokasi='$lokasi', 
                 pm25='$pm25', 
+                pm10='$pm10',
+                co='$co',
+                no2='$no2',
+                so2='$so2',
+                o3='$o3',
                 suhu='$suhu',
+                kelembapan='$kelembapan',
                 aqi='$aqi',
                 status_kualitas='$status'
                 WHERE id=$id";

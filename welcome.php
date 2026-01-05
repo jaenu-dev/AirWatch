@@ -99,16 +99,50 @@ $locations = getAvailableLocations();
             100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
         }
 
+        /* Mobile Responsive Adjustments (iPhone SE & Small Screens) */
         @media (max-width: 576px) {
             .welcome-card {
-                padding: 2.5rem 1.5rem !important;
+                padding: 1.5rem 1.2rem !important;
+                width: 90% !important;
+                max-width: 100% !important;
+                border-radius: 20px;
+                margin-top: -20px; /* Pull up slightly */
             }
+
             .brand-icon {
-                width: 90px !important;
-                height: 90px !important;
+                width: 70px !important;
+                height: 70px !important;
+                margin-bottom: 0.8rem !important;
             }
+
             h1 {
-                font-size: 2rem !important;
+                font-size: 1.6rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            p.text-muted.fs-5 {
+                font-size: 0.95rem !important;
+                line-height: 1.4;
+                margin-bottom: 2rem !important; /* Reduce space below text */
+            }
+
+            .location-select {
+                padding: 0.7rem 1rem !important;
+                font-size: 0.9rem !important;
+                height: auto;
+                margin-bottom: 1.2rem !important;
+            }
+
+            .btn-start-premium {
+                padding: 0.8rem 1rem !important;
+                font-size: 0.9rem !important;
+                width: 100% !important;
+                margin-top: 0.5rem;
+            }
+            
+            .welcome-hero {
+                padding: 1rem;
+                align-items: center; /* Ensure center vertically */
             }
         }
     </style>
@@ -130,11 +164,11 @@ $locations = getAvailableLocations();
 
         <div class="container px-4">
             <div class="welcome-card mx-auto">
-                <div class="mb-5">
-                    <div class="brand-icon mx-auto mb-4" style="width: 120px; height: 120px; background: transparent; box-shadow: none;">
+                <div class="mb-4">
+                    <div class="brand-icon mx-auto mb-0" style="width: 120px; height: 120px; background: transparent; box-shadow: none; margin-bottom: -15px !important;">
                         <img src="assets/logo.png" alt="AirWatch Logo" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
-                    <h1 class="fw-bold mb-3" style="font-size: 2.5rem; color: var(--brand-dark);">AirWatch</h1>
+                    <h1 class="fw-bold mb-3 mt-0" style="font-size: 2.5rem; color: var(--brand-primary); line-height: 1.2;">AirWatch</h1>
                     <p class="text-muted fs-5">Pantau kualitas udara di sekitar Anda dengan presisi tinggi.</p>
                 </div>
 
