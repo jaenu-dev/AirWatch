@@ -143,7 +143,7 @@ $locations = getAvailableLocations();
                         <label class="text-dark small fw-bold text-uppercase ms-2 opacity-50">Pilih Lokasi Monitoring</label>
                     </div>
                     <select name="lokasi" class="location-select form-select mb-4" required>
-                        <option value="" disabled selected>Cari Kota / Area Area Anda </option>
+                        <option value="" disabled selected>Cari Kota / Area Anda </option>
                         <?php foreach($locations as $loc): ?>
                             <option value="<?php echo htmlspecialchars($loc); ?>"><?php echo htmlspecialchars($loc); ?></option>
                         <?php endforeach; ?>

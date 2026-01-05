@@ -54,32 +54,7 @@ function getLatestSensorData($limit = 10) {
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
-/**
- * Fungsi untuk mengambil alert aktif
- * @param int $limit - Jumlah alert yang diambil
- * @return array - Array alert
- */
-function getActiveAlerts($limit = 20) {
-    global $conn;
-    $sql = "SELECT * FROM alerts WHERE status = 'aktif' ORDER BY created_at DESC LIMIT ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $limit);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
-}
 
-/**
- * Fungsi untuk menghitung jumlah alert aktif
- * @return int - Jumlah alert
- */
-function countActiveAlerts() {
-    global $conn;
-    $sql = "SELECT COUNT(*) as total FROM alerts WHERE status = 'aktif'";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    return $row['total'];
-}
 
 /**
  * Fungsi untuk mendapatkan statistik kualitas udara

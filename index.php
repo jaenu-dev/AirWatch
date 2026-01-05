@@ -12,17 +12,17 @@ $selectedLocation = $_GET['lokasi'];
 // Data Logic filtered by Location
 $latestData = getLatestSensorDataByLocation($selectedLocation, 1); // Get latest 1 for specific location
 $stats = getAirQualityStatsByLocation($selectedLocation);
-$alertCount = countActiveAlerts(); // Global alerts, or could be filtered if table supported it
-$activeAlerts = getActiveAlerts(); // Fetch alert details
 $avgAQI = round($stats['avg_aqi'] ?? 0);
+
+// --- AQI Tier Definitions & Styles (Global) ---
 
 // --- AQI Tier Definitions & Styles (Global) ---
 $aqiTiers = [
     ['name' => 'Baik', 'class' => 'good', 'color' => '#10B981', 'light_color' => '#A7F3D0', 'icon' => 'fa-smile', 'desc' => 'Udara segar dan bebas racun. Nikmati aktivitas luar ruangan tanpa khawatir.'],
     ['name' => 'Sedang', 'class' => 'moderate', 'color' => '#F59E0B', 'light_color' => '#FDE68A', 'icon' => 'fa-meh', 'desc' => 'Kualitas udara dapat diterima, namun orang yang sensitif mungkin mengalami gangguan ringan.'],
-    ['name' => 'Tidak Sehat (S)', 'class' => 'poor', 'color' => '#F97316', 'light_color' => '#FED7AA', 'icon' => 'fa-frown-open', 'desc' => 'Pernapasan mungkin sedikit terganggu, terutama bagi mereka yang memiliki masalah pernapasan.'],
+    ['name' => 'Sensitif', 'class' => 'poor', 'color' => '#F97316', 'light_color' => '#FED7AA', 'icon' => 'fa-frown-open', 'desc' => 'Pernapasan mungkin sedikit terganggu, terutama bagi mereka yang memiliki masalah pernapasan.'],
     ['name' => 'Tidak Sehat', 'class' => 'unhealthy', 'color' => '#EF4444', 'light_color' => '#FECACA', 'icon' => 'fa-frown', 'desc' => 'Berisiko bagi anak-anak, ibu hamil, dan lansia. Batasi aktivitas di luar ruangan.'],
-    ['name' => 'Sangat Tdk Sehat', 'class' => 'severe', 'color' => '#8B5CF6', 'light_color' => '#DDD6FE', 'icon' => 'fa-dizzy', 'desc' => 'Paparan berkepanjangan dapat menyebabkan masalah kesehatan kronis. Hindari aktivitas luar.'],
+    ['name' => 'Sangat Tidak Sehat', 'class' => 'severe', 'color' => '#8B5CF6', 'light_color' => '#DDD6FE', 'icon' => 'fa-dizzy', 'desc' => 'Paparan berkepanjangan dapat menyebabkan masalah kesehatan kronis. Hindari aktivitas luar.'],
     ['name' => 'Berbahaya', 'class' => 'hazardous', 'color' => '#7F1D1D', 'light_color' => '#FCA5A5', 'icon' => 'fa-skull-crossbones', 'desc' => 'Tingkat polusi berbahaya. Risiko kesehatan yang mengancam jiwa. Tetap di dalam ruangan.']
 ];
 
@@ -51,9 +51,14 @@ function getTierInfo($type, $val, $tiers, $refs) {
 
 // Summary Logic matching Standard AQI
 $statusParams = getTierInfo('aqi', $avgAQI, $aqiTiers, $pollutantRefs);
-$statusParams['message'] = $statusParams['desc']; // Map desc to message
 $statusParams['status'] = $statusParams['name'];   // Map name to status
 $statusParams['text_class'] = 'text-' . $statusParams['class'];
+
+// Logic to Auto-Trigger Alert Popup based heavily on Status
+// Trigger if status is 'Sensitif' or worse. 
+// Classes: good, moderate, poor (Sensitif), unhealthy, severe, hazardous
+$badStatuses = ['poor', 'unhealthy', 'severe', 'hazardous'];
+$autoShowAlert = in_array($statusParams['class'], $badStatuses);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -76,26 +81,18 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
         <div class="container">
             <div class="d-flex align-items-center justify-content-between w-100">
                 <a href="welcome.php" class="brand-wrapper d-flex align-items-center gap-3">
-                    <img src="assets/logo.png" alt="Logo" style="width: 55px; height: 55px; object-fit: contain;">
+                    <img src="assets/logo.png" alt="Logo" class="navbar-logo">
                     <span class="fs-4 fw-bold">AirWatch</span>
                 </a>
                 
 
 
                 <div class="nav-links d-flex align-items-center">
-                     <a href="welcome.php" class="btn-premium me-2">
-                        <i class="fas fa-map-marker-alt"></i> Ganti Lokasi
+                     <a href="welcome.php" class="btn-premium btn-responsive-icon">
+                        <i class="fas fa-map-marker-alt"></i> <span class="d-none d-md-inline">Ganti Lokasi</span>
                     </a>
 
-                    <!-- Notification Icon -->
-                    <a href="#" class="btn-premium btn-circle-premium me-2 position-relative" data-bs-toggle="modal" data-bs-target="#notificationModal" title="Pemberitahuan">
-                        <i class="fas fa-bell"></i>
-                        <?php if($alertCount > 0): ?>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; padding: 0.35em 0.5em; border: 2px solid white;">
-                                <?php echo $alertCount; ?>
-                            </span>
-                        <?php endif; ?>
-                    </a>
+
 
                     <a href="#" class="btn-premium btn-circle-premium" data-bs-toggle="modal" data-bs-target="#aboutModal" title="Tentang AirWatch">
                         <i class="fas fa-info-circle"></i>
@@ -110,7 +107,7 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
         <div class="container pt-4">
             <div class="row g-4 mb-5">
                 <!-- Left Column: Summary Card -->
-                <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="col-md-5 col-lg-4 mb-4 mb-md-0">
                     <div class="hero-summary-card" style="--card-gradient-start: <?php echo $statusParams['light_color']; ?>;">
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <i class="fas fa-location-dot text-danger"></i>
@@ -118,7 +115,7 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
                         </div>
 
                         <!-- Circular AQI Indicator -->
-                        <div class="aqi-circle-container">
+                        <div class="aqi-circle-container d-flex justify-content-center align-items-center mx-auto">
                             <div class="aqi-circle-outer" style="border-color: <?php echo $statusParams['color']; ?>33;">
                                 <div class="aqi-circle-value" style="color: <?php echo $statusParams['color']; ?>;">
                                     <?php echo $avgAQI; ?>
@@ -140,26 +137,26 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
                             ?>
                             <div class="aqi-scale-container" style="width: 100%; margin-top: 1.5rem;">
                                 <!-- Grid Labels -->
-                                <div class="aqi-scale-labels" style="display: grid !important; grid-template-columns: repeat(4, 1fr) !important; width: 100% !important; margin-bottom: 6px;">
-                                    <span style="font-size: 0.6rem; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; text-align: left;">Baik</span>
-                                    <span style="font-size: 0.6rem; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; text-align: center;">Sedang</span>
-                                    <span style="font-size: 0.6rem; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; text-align: center;">Buruk</span>
-                                    <span style="font-size: 0.6rem; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; text-align: right;">Bahaya</span>
+                                <div class="aqi-scale-labels">
+                                    <span>Baik</span>
+                                    <span>Sedang</span>
+                                    <span>Buruk</span>
+                                    <span>Bahaya</span>
                                 </div>
                                 
                                 <!-- Bar -->
-                                <div class="aqi-bar-wrapper" style="position: relative; height: 8px; width: 100% !important; border-radius: 10px; background: linear-gradient(90deg, #10B981 0%, #FACC15 20%, #F97316 40%, #EF4444 60%, #A855F7 80%, #B91C1C 100%); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 6px;">
-                                    <div class="aqi-marker" style="position: absolute; top: 50%; left: <?php echo $markerPos; ?>%; transform: translate(-50%, -50%); width: 18px; height: 18px; background: #FFFFFF; border: 3px solid <?php echo $statusParams['color']; ?>; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 2; transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+                                <div class="aqi-bar-wrapper">
+                                    <div class="aqi-marker" style="position: absolute; top: 50%; left: <?php echo $markerPos; ?>%; transform: translate(-50%, -50%); border-color: <?php echo $statusParams['color']; ?>;"></div>
                                 </div>
                                 
                                 <!-- Grid Values -->
-                                <div class="aqi-scale-values" style="display: grid !important; grid-template-columns: repeat(6, 1fr) !important; width: 100% !important;">
-                                    <span style="font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: left;">0</span>
-                                    <span style="font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: center;">50</span>
-                                    <span style="font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: center;">100</span>
-                                    <span style="font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: center;">150</span>
-                                    <span style="font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: center;">200</span>
-                                    <span style="font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: right;">300</span>
+                                <div class="aqi-scale-values">
+                                    <span>0</span>
+                                    <span>50</span>
+                                    <span>100</span>
+                                    <span>150</span>
+                                    <span>200</span>
+                                    <span>300</span>
                                 </div>
                             </div>
 
@@ -171,7 +168,7 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
                 </div>
 
                 <!-- Right Column: Details Card -->
-                <div class="col-lg-8">
+                <div class="col-md-7 col-lg-8">
                     <div class="hero-details-card" style="--card-gradient-start: <?php echo $statusParams['light_color']; ?>;">
                         <div class="polutan-header mb-4 d-flex justify-content-between align-items-center">
                             <h6 class="fw-bold m-0 text-dark">Polutan Udara</h6>
@@ -316,41 +313,40 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
                     </div>
                     <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4" style="max-height: 450px; overflow-y: auto;">
-                    <?php if (empty($activeAlerts)): ?>
-                        <div class="text-center py-5">
-                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
-                                <i class="fas fa-check-circle text-success fs-2"></i>
+                <div class="modal-body p-4 text-center">
+                    
+                    <?php if ($autoShowAlert): ?>
+                        <div class="mb-4">
+                            <i class="fas <?php echo $statusParams['icon']; ?> fa-4x mb-3" style="color: <?php echo $statusParams['color']; ?>;"></i>
+                            <h3 class="fw-bold mb-2" style="color: <?php echo $statusParams['color']; ?>;">
+                                <?php echo $statusParams['status']; ?>
+                            </h3>
+                            <div class="badge rounded-pill px-3 py-2 mb-3" style="background-color: <?php echo $statusParams['color']; ?>; color: white;">
+                                AQI: <?php echo $avgAQI; ?>
                             </div>
-                            <h6 class="fw-bold text-dark">Tidak Ada Peringatan</h6>
-                            <p class="text-muted small">Saat ini kualitas udara terpantau aman.</p>
                         </div>
+                        
+                        <div class="alert p-3 rounded-3 text-start" style="background-color: <?php echo $statusParams['light_color']; ?>; border-left: 5px solid <?php echo $statusParams['color']; ?>;">
+                            <h5 class="fw-bold fs-6 mb-2" style="color: <?php echo $statusParams['color']; ?>;">
+                                <i class="fas fa-exclamation-circle me-2"></i>Rekomendasi Kesehatan
+                            </h5>
+                            <p class="mb-0 text-dark opacity-75">
+                                <?php echo $statusParams['desc']; ?>
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4 text-muted small">
+                            <p>Kualitas udara di <strong><?php echo htmlspecialchars($selectedLocation); ?></strong> memerlukan perhatian khusus saat ini.</p>
+                        </div>
+
                     <?php else: ?>
-                        <div class="alert-list">
-                            <?php foreach ($activeAlerts as $alert): 
-                                $isDanger = ($alert['tingkat_bahaya'] == 'Bahaya');
-                                $accentColor = $isDanger ? '#ef4444' : '#f59e0b';
-                                $bgAlpha = $isDanger ? '0.05' : '0.08';
-                                $badgeClass = $isDanger ? 'bg-danger' : 'bg-warning text-dark';
-                                $iconClass = $isDanger ? 'fa-triangle-exclamation' : 'fa-circle-exclamation';
-                            ?>
-                                <div class="alert-item p-3 mb-3 rounded-3 border-start border-4 shadow-sm" 
-                                     style="background: <?php echo $accentColor; echo $isDanger ? '0d' : '15'; ?>; border-color: <?php echo $accentColor; ?> !important;">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="fw-bold mb-0" style="color: <?php echo $accentColor; ?>;"><?php echo htmlspecialchars($alert['pesan']); ?></h6>
-                                        <small class="text-muted"><?php echo date('H:i', strtotime($alert['created_at'])); ?></small>
-                                    </div>
-                                    <p class="text-secondary small mb-2"><?php echo htmlspecialchars($alert['keterangan'] ?? 'Terdeteksi kondisi udara yang memerlukan perhatian di lokasi proyek.'); ?></p>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge <?php echo $badgeClass; ?> rounded-pill" style="font-size: 0.65rem;">
-                                            <i class="fas <?php echo $iconClass; ?> me-1"></i> <?php echo $alert['tingkat_bahaya']; ?>
-                                        </span>
-                                        <small class="text-muted" style="font-size: 0.7rem;">
-                                            <i class="fas fa-calendar-alt me-1"></i> <?php echo date('d M Y', strtotime($alert['created_at'])); ?>
-                                        </small>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
+                        <!-- Safe Condition Display (Optional if manual open) -->
+                        <div class="text-center py-4">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-smile text-success fs-1"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark">Udara Aman</h4>
+                            <p class="text-muted">Kualitas udara saat ini baik. Tidak ada peringatan khusus.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -432,138 +428,154 @@ $statusParams['text_class'] = 'text-' . $statusParams['class'];
     
     <script>
         // --- 1. INITIALIZE MAP (Yogyakarta) ---
-        var map = L.map('map').setView([-7.7956, 110.3695], 12); // Center of Jogja
+        if (document.getElementById('map')) {
+            var map = L.map('map').setView([-7.7956, 110.3695], 12); // Center of Jogja
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
 
-        // Custom Icon
-        var sensorIcon = L.divIcon({
-            className: 'custom-div-icon',
-            html: "<div style='background-color:#E11D48;width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 10px rgba(225,29,72,0.5);'></div>",
-            iconSize: [15, 15],
-            iconAnchor: [7, 7]
-        });
-
-        // Function to determine color based on AQI
-        function getAqiColor(aqi) {
-            if(aqi <= 50) return '#10B981'; // Good
-            if(aqi <= 100) return '#F59E0B'; // Moderate
-            if(aqi <= 150) return '#F97316'; // Unhealthy for Sensitive
-            return '#EF4444'; // Unhealthy+
-        }
-
-        // Add Markers from PHP Data
-        var locations = <?php echo json_encode($latestData); ?>;
-        
-        locations.forEach(function(loc) {
-            // Random small offset for demo (since DB might not have coords)
-            // IN REAL APP: Use loc.latitude and loc.longitude
-            var lat = -7.7956 + (Math.random() - 0.5) * 0.1; 
-            var lng = 110.3695 + (Math.random() - 0.5) * 0.1;
-            
-            // If you have strict coords for Sleman, Bantul, etc hardcode them here logic-wise or in DB
-            // Demo mapping for Names to Approx Coords
-            if(loc.lokasi.includes("Sleman")) { lat = -7.7137; lng = 110.3551; }
-            if(loc.lokasi.includes("Bantul")) { lat = -7.8927; lng = 110.3220; }
-            if(loc.lokasi.includes("Kaliurang")) { lat = -7.5976; lng = 110.4285; }
-            if(loc.lokasi.includes("Godean")) { lat = -7.7690; lng = 110.2930; }
-            if(loc.lokasi.includes("Condong")) { lat = -7.7600; lng = 110.4098; }
-
-            var color = getAqiColor(loc.aqi);
-            
-            var customIcon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div style="background-color:${color};width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 4px 10px rgba(0,0,0,0.2);"></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
+            // Custom Icon
+            var sensorIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: "<div style='background-color:#E11D48;width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 10px rgba(225,29,72,0.5);'></div>",
+                iconSize: [15, 15],
+                iconAnchor: [7, 7]
             });
 
-            L.marker([lat, lng], {icon: customIcon})
-                .addTo(map)
-                .bindPopup(`<b>${loc.lokasi}</b><br>AQI: <strong style="color:${color}">${loc.aqi}</strong><br>${loc.status_kualitas}`);
-        });
+            // Function to determine color based on AQI
+            function getAqiColor(aqi) {
+                if(aqi <= 50) return '#10B981'; // Good
+                if(aqi <= 100) return '#F59E0B'; // Moderate
+                if(aqi <= 150) return '#F97316'; // Unhealthy for Sensitive
+                return '#EF4444'; // Unhealthy+
+            }
+
+            // Add Markers from PHP Data
+            var locations = <?php echo json_encode($latestData); ?>;
+            
+            locations.forEach(function(loc) {
+                // Random small offset for demo (since DB might not have coords)
+                // IN REAL APP: Use loc.latitude and loc.longitude
+                var lat = -7.7956 + (Math.random() - 0.5) * 0.1; 
+                var lng = 110.3695 + (Math.random() - 0.5) * 0.1;
+                
+                // If you have strict coords for Sleman, Bantul, etc hardcode them here logic-wise or in DB
+                // Demo mapping for Names to Approx Coords
+                if(loc.lokasi.includes("Sleman")) { lat = -7.7137; lng = 110.3551; }
+                if(loc.lokasi.includes("Bantul")) { lat = -7.8927; lng = 110.3220; }
+                if(loc.lokasi.includes("Kaliurang")) { lat = -7.5976; lng = 110.4285; }
+                if(loc.lokasi.includes("Godean")) { lat = -7.7690; lng = 110.2930; }
+                if(loc.lokasi.includes("Condong")) { lat = -7.7600; lng = 110.4098; }
+
+                var color = getAqiColor(loc.aqi);
+                
+                var customIcon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="background-color:${color};width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 4px 10px rgba(0,0,0,0.2);"></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+
+                L.marker([lat, lng], {icon: customIcon})
+                    .addTo(map)
+                    .bindPopup(`<b>${loc.lokasi}</b><br>AQI: <strong style="color:${color}">${loc.aqi}</strong><br>${loc.status_kualitas}`);
+            });
+        }
 
 
         // --- 2. INITIALIZE CHART (Simulated Trends) ---
-        const ctx = document.getElementById('trendChart').getContext('2d');
-        
-        // Generate last 24h labels
-        const labels = [];
-        for(let i=23; i>=0; i--) {
-            labels.push(i + ":00");
-        }
-
-        // Dummy data generator
-        function generateData(base) {
-            let data = [];
-            for(let i=0; i<24; i++) {
-                let change = Math.floor(Math.random() * 20) - 10;
-                let val = base + change;
-                if(val < 0) val = 10;
-                data.push(val);
-            }
-            return data;
-        }
-
-        const gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
-        gradientFill.addColorStop(0, 'rgba(26, 92, 255, 0.2)');
-        gradientFill.addColorStop(1, 'rgba(26, 92, 255, 0)');
-
-        const myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Rata-rata AQI (24 Jam)',
-                    data: generateData(75),
-                    borderColor: '#1A5CFF',
-                    backgroundColor: gradientFill,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        titleColor: '#0F172A',
-                        bodyColor: '#1A5CFF',
-                        borderColor: '#E2E8F0',
-                        borderWidth: 1,
-                        padding: 10,
-                        titleFont: { weight: 'bold' }
-                    }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } },
-                    y: { border: { display: false }, grid: { borderDash: [5, 5] } }
-                }
-            }
-        });
-
-        // Interactive changing of chart based on dropdown
-        document.getElementById('locationSelect').addEventListener('change', function(e) {
-            let baseAQI = 75; // Default for 'all'
-            // Simple logic to change graph pattern
-            if(this.value.includes("Kaliurang")) baseAQI = 40;
-            if(this.value.includes("Sleman")) baseAQI = 110;
+        if(document.getElementById('trendChart')) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
             
-            myChart.data.datasets[0].data = generateData(baseAQI);
-            myChart.data.datasets[0].label = this.value === 'all' ? 'Rata-rata AQI' : 'AQI ' + this.value;
-            myChart.update();
-        });
+            // Generate last 24h labels
+            const labels = [];
+            for(let i=23; i>=0; i--) {
+                labels.push(i + ":00");
+            }
+
+            // Dummy data generator
+            function generateData(base) {
+                let data = [];
+                for(let i=0; i<24; i++) {
+                    let change = Math.floor(Math.random() * 20) - 10;
+                    let val = base + change;
+                    if(val < 0) val = 10;
+                    data.push(val);
+                }
+                return data;
+            }
+
+            const gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientFill.addColorStop(0, 'rgba(26, 92, 255, 0.2)');
+            gradientFill.addColorStop(1, 'rgba(26, 92, 255, 0)');
+
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Rata-rata AQI (24 Jam)',
+                        data: generateData(75),
+                        borderColor: '#1A5CFF',
+                        backgroundColor: gradientFill,
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#0F172A',
+                            bodyColor: '#1A5CFF',
+                            borderColor: '#E2E8F0',
+                            borderWidth: 1,
+                            padding: 10,
+                            titleFont: { weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } },
+                        y: { border: { display: false }, grid: { borderDash: [5, 5] } }
+                    }
+                }
+            });
+
+            // Interactive changing of chart based on dropdown
+            document.getElementById('locationSelect').addEventListener('change', function(e) {
+                let baseAQI = 75; // Default for 'all'
+                // Simple logic to change graph pattern
+                if(this.value.includes("Kaliurang")) baseAQI = 40;
+                if(this.value.includes("Sleman")) baseAQI = 110;
+                
+                myChart.data.datasets[0].data = generateData(baseAQI);
+                myChart.data.datasets[0].label = this.value === 'all' ? 'Rata-rata AQI' : 'AQI ' + this.value;
+                myChart.update();
+            });
+        }
+
+
+
+
+
+        // Auto Show Alert Modal if Needed
+        <?php if($autoShowAlert): ?>
+            window.addEventListener('load', function() {
+                var alertModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+                alertModal.show();
+            });
+        <?php endif; ?>
     </script>
 </body>
 </html>

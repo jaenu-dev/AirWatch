@@ -95,6 +95,13 @@ a {
     color: white;
 }
 
+.navbar-logo {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    transition: all 0.3s ease;
+}
+
 .nav-links {
     display: flex;
     gap: 2rem;
@@ -823,9 +830,23 @@ a {
         height: 70px;
     }
 
+    .navbar-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Make location button circular on mobile */
+    .btn-responsive-icon {
+        padding: 0 !important;
+        width: 48px;
+        height: 48px;
+        border-radius: 50% !important;
+        justify-content: center;
+    }
+
     .nav-links {
         display: flex;
-        gap: 1.5rem;
+        gap: 0.8rem;
     }
 
 
@@ -885,18 +906,32 @@ a {
         padding-top: 1rem;
     }
 
-    .hero-summary-card,
-    .hero-details-card {
-        padding: 2rem 1.5rem !important;
-        margin-bottom: 1rem;
+    /* Hero Adjustments */
+    .hero-wide {
+        padding: 6rem 0 3rem;
+        margin-top: -70px;
+        text-align: center;
+    }
+
+    .hero-section-new {
+        padding-top: 1rem;
     }
 
     /* Stack columns correctly */
     .row.g-4 {
         --bs-gutter-y: 1rem;
     }
+}
 
-    /* Circular indicator sizing for tablet/mobile */
+/* Mobile Portrait (Max 767px) - Layout Shifts */
+@media (max-width: 767px) {
+    .hero-summary-card,
+    .hero-details-card {
+        padding: 2rem 1.5rem !important;
+        margin-bottom: 1rem;
+    }
+
+    /* Circular indicator sizing for mobile */
     .aqi-circle-outer {
         width: 180px !important;
         height: 180px !important;
@@ -919,7 +954,31 @@ a {
         font-size: 1.5rem !important;
     }
 
+    /* Mobile Pollutant Tabs - Horizontal Scroll */
+    #pills-tab {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        justify-content: flex-start !important;
+        border-radius: 12px !important;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+        padding: 0.5rem !important;
+    }
+    
+    #pills-tab::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
 
+    #pills-tab .nav-item {
+        flex: 0 0 auto !important;
+        margin-right: 5px;
+    }
+
+    #pills-tab .nav-link {
+        white-space: nowrap;
+        font-size: 0.85rem;
+        padding: 0.5rem 1.2rem;
+    }
 }
 
 /* Mobile Portrait (Max 576px) */
