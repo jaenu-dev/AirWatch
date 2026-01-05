@@ -1,6 +1,6 @@
 <?php
 require_once 'koneksi.php';
-$alertCount = countActiveAlerts();
+$alertCount = 0;
 ?>
 <!DOCTYPE html>
 <html lang="id">

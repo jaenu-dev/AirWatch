@@ -18,7 +18,7 @@ $sql = "SELECT * FROM sensor_data $whereClause ORDER BY timestamp DESC LIMIT $pe
 $result = $conn->query($sql);
 $lokasiSql = "SELECT DISTINCT lokasi FROM sensor_data ORDER BY lokasi";
 $lokasiResult = $conn->query($lokasiSql);
-$alertCount = countActiveAlerts();
+$alertCount = 0; // Alerts disabled
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -61,7 +61,7 @@ $alertCount = countActiveAlerts();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="nav-links ms-auto">
                     <a class="nav-link-item active" href="data.php">Kelola Data</a>
-                    <a class="nav-link-item" href="alert.php">Kelola Alert</a>
+
                     <a href="../index.php" class="btn-premium btn-outline-light ms-3"><i class="fas fa-external-link-alt"></i> Ke Website Utama</a>
                 </div>
             </div>

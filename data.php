@@ -18,7 +18,7 @@ $sql = "SELECT * FROM sensor_data $whereClause ORDER BY timestamp DESC LIMIT $pe
 $result = $conn->query($sql);
 $lokasiSql = "SELECT DISTINCT lokasi FROM sensor_data ORDER BY lokasi";
 $lokasiResult = $conn->query($lokasiSql);
-$alertCount = countActiveAlerts();
+$alertCount = 0; // Disabled
 ?>
 <!DOCTYPE html>
 <html lang="id">
